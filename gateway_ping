@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+if ARGV.first == "config"
+  print <<CONFIG
+graph_title Gateway ping response time
+graph_vlabel time (ms)
+graph_args --base 1000 -l 0
+graph_scale no
+graph_category network
+gateway.label Ping
+CONFIG
+else
+  if `ip route` =~ /default via ([\d.]+)/
+    ip = $1
+    if `/bin/ping -nc1 #{ip} 2>/dev/null` =~ %r"^rtt min/avg/max/mdev = ([\d.]+)"
+      value = $1
+      puts "gateway.value #{value}"
+    end
+  end
+end
